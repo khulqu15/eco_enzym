@@ -1,0 +1,19 @@
+<template>
+  <div class="bg-base-200 min-h-screen">
+    <top-navigation/>
+    <div class="w-12 bg-primary">
+      <div class="radial-progress w-20 h-20 rounded-xl" style="--value:70; --size:12rem; --thickness: 8px;">70%</div>
+    </div>
+  </div>
+</template>
+
+
+<script lang="ts">
+import TopNavigation from '@/components/TopNavigation.vue'
+import { defineComponent } from 'vue'
+export default defineComponent({
+  components: {
+    TopNavigation
+  }
+})
+</script>

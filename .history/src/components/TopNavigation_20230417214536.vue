@@ -1,0 +1,18 @@
+<template>
+    <div class="flex p-8 justify-content-between items-center">
+        <div>
+            <button class="btn btn-ghost">
+
+            </button>
+        </div>
+    </div>
+</template>
+
+<script lang="ts">
+import { defineComponent } from 'vue'
+import { Icon } from '@iconify/vue'
+
+export default defineComponent({
+    components: { Icon }
+})
+</script>
