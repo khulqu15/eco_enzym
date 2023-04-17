@@ -8,6 +8,7 @@
 import { defineComponent, ref } from 'vue';
 import { IonApp, IonRouterOutlet } from '@ionic/vue';
 export default defineComponent({
+  {
   components: {
     IonRouterOutlet,
     IonApp
@@ -30,4 +31,5 @@ export default defineComponent({
     },
   },
 })
+}
 </script>
