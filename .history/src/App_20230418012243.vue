@@ -14,13 +14,13 @@ export default {
   },
   setup() {
     const routerViewKey = ref(0);
+    return { routerViewKey };
     const localTheme: any = localStorage.getItem('theme')
     if(!localTheme) {
       localStorage.setItem('theme', 'light')
       const localTheme: any = localStorage.getItem('theme')
     }
     document.documentElement.dataset.theme = localTheme as string
-    return { routerViewKey };
   },
   watch: {
     $route() {
