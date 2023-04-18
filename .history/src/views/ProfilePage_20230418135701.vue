@@ -6,7 +6,7 @@
             <Icon icon="solar:home-smile-angle-bold-duotone" class="text-3xl"/>
             Kembali
         </button>
-        <h4 class="font-bold m-0 text-base-content">{{ !isEmpty(user) ? 'Profilku' : 'Pengaturan' }}</h4>
+        <h4 class="font-bold m-0 text-base-content">Profilku</h4>
       </div>
       <div v-if="!isEmpty(user)" class="bg-base-100 relative w-full rounded-2xl mt-6 overflow-hidden">
         <div class="w-full p-8 relative items-center flex gap-x-4">

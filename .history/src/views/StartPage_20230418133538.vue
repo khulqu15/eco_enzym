@@ -10,7 +10,7 @@
     </div>
     <div class="fixed left-0 bottom-0 w-full p-6 bg-base-100 rounded-t-2xl">
         <button @click="loginGoogle()" class="btn bg-primary w-full text-white">Login</button>
-        <button @click="$router.push({name: 'Home'})" class="btn mt-3 bg-ghost w-full text-white">Skip</button>
+        <button @click="loginGoogle()" class="btn bg-primary w-full text-white">Skip</button>
     </div>
   </div>
 </template>

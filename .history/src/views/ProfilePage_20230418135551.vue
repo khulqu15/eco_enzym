@@ -6,10 +6,10 @@
             <Icon icon="solar:home-smile-angle-bold-duotone" class="text-3xl"/>
             Kembali
         </button>
-        <h4 class="font-bold m-0 text-base-content">{{ !isEmpty(user) ? 'Profilku' : 'Pengaturan' }}</h4>
+        <h4 class="font-bold m-0 text-base-content">Profilku</h4>
       </div>
-      <div v-if="!isEmpty(user)" class="bg-base-100 relative w-full rounded-2xl mt-6 overflow-hidden">
-        <div class="w-full p-8 relative items-center flex gap-x-4">
+      <div class="bg-base-100 relative w-full rounded-2xl mt-6 overflow-hidden">
+        <div v-if="user" class="w-full p-8 relative items-center flex gap-x-4">
             <div @click="$router.push({name: 'Profile'})" class="avatar px-0 hover:bg-base-200">
                 <div class="w-16 mask mask-squircle">
                     <img :src="`${user.photoURL}`" alt="Photo profile"/>
@@ -69,9 +69,6 @@ export default defineComponent({
     Icon,
   },
   methods: {
-    isEmpty(obj: object): boolean {
-        return Object.keys(obj).length === 0 && obj.constructor === Object;
-    },
     changeTheme() {
         if(this.selectedTheme >= 9)
             this.selectedTheme = 0

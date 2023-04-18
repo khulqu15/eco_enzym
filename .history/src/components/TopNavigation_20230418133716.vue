@@ -8,8 +8,7 @@
         <div>
             <div @click="$router.push({name: 'Profile'})" class="avatar btn btn-ghost px-0 hover:bg-base-200">
                 <div class="w-12 mask mask-squircle">
-                    <img v-if="!isEmpty(user)" :src="`${user.photoURL}`" alt="Photo profile"/>
-                    <img v-else src="/assets/setting.png" alt="Photo profile"/>
+                    <img :src="`${user.photoURL}`" alt="Photo profile"/>
                 </div>
             </div>
         </div>
@@ -32,14 +31,8 @@ export default defineComponent({
     created() {
         onAuthStateChanged(auth, (user) => {
             if (user) this.user = user
-            console.log(this.user)
         })
     },
-    methods: {
-        isEmpty(obj: object): boolean {
-           return Object.keys(obj).length === 0 && obj.constructor === Object;
-        }
-    }
 
 })
 </script>
