@@ -17,9 +17,9 @@
                             <img :src="`${user.photoURL}`" alt="Photo profile"/>
                         </div>
                     </div>
-                    <div class="text-base-content">
+                    <div>
                         <h5 class="m-0 font-bold">{{ user.displayName }}</h5>
-                        <p class="text-sm">{{ user.email }}</p>
+                        <p class="text-base-content text-sm">{{ user.email }}</p>
                     </div>
                 </div>
                 <div class="w-full bg-primary p-2 rounded-2xl"></div>

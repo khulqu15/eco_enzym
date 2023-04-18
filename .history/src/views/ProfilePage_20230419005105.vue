@@ -3,7 +3,7 @@
     <ion-content>
         <div class="bg-base-200 min-h-screen pb-12">
             <div class="px-8 py-8">
-            <div class="flex justify-between text-base-content items-center">
+            <div class="flex justify-between text-base-contenr items-center">
                 <button @click="$router.push({name: 'Home'})" class="btn btn-ghost">
                     <Icon icon="solar:home-smile-angle-bold-duotone" class="text-3xl"/>
                     Kembali
@@ -17,9 +17,9 @@
                             <img :src="`${user.photoURL}`" alt="Photo profile"/>
                         </div>
                     </div>
-                    <div class="text-base-content">
+                    <div>
                         <h5 class="m-0 font-bold">{{ user.displayName }}</h5>
-                        <p class="text-sm">{{ user.email }}</p>
+                        <p class="text-base-content text-sm">{{ user.email }}</p>
                     </div>
                 </div>
                 <div class="w-full bg-primary p-2 rounded-2xl"></div>
