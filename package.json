@@ -21,6 +21,7 @@
     "@types/vuedraggable": "^2.24.0",
     "animate.css": "^4.1.1",
     "autoprefixer": "^10.4.14",
+    "cordova-plugin-firebase": "^2.0.5",
     "core-js": "^3.6.5",
     "daisyui": "^2.51.5",
     "firebase": "^9.19.1",
