@@ -1,7 +1,7 @@
 <template>
   <ion-page>
     <ion-content>
-        <div class="bg-base-200 min-h-screen pb-12">
+        <div class="bg-base-200 min-h-screen">
             <div class="px-8 py-8">
             <div class="flex justify-between items-center">
                 <button @click="$router.push({name: 'Home'})" class="btn btn-ghost">

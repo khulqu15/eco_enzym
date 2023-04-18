@@ -52,8 +52,6 @@ import { db } from '@/firebase';
 
 export default defineComponent({
   components: {
-    IonPage,
-    IonContent,
     TopNavigation,
     Icon,
     draggable: VueDraggableNext,
@@ -97,26 +95,24 @@ export default defineComponent({
         })
         const limit: any = output.slice(-10)
         const last_data: any = Object.values(limit[limit.length - 1])
-        setTimeout(() => {
-          if(this.list != null && this.list != undefined) {
-            if(this.list.length != null && this.list.length > 1) {
-              const ozon = this.list.find((item) => item.name === "Ozon");
-              if (ozon) ozon.value = last_data[0].ozone_ppm as number;
+        if(this.list) {
+          if(this.list.length && this.list.length > 1) {
+            const ozon = this.list.find((item) => item.name === "Ozon");
+            if (ozon) ozon.value = last_data[0].ozone_ppm as number;
 
-              const temp = this.list.find((item) => item.name === "Temperature");
-              if (temp) temp.value = last_data[0].temp_w as number;
+            const temp = this.list.find((item) => item.name === "Temperature");
+            if (temp) temp.value = last_data[0].temp_w as number;
 
-              const ph = this.list.find((item) => item.name === "PH Meter");
-              if (ph) ph.value = last_data[0].ph ? last_data[0].ph as number : 0;
+            const ph = this.list.find((item) => item.name === "PH Meter");
+            if (ph) ph.value = last_data[0].ph ? last_data[0].ph as number : 0;
 
-              const alcohol1 = this.list.find((item) => item.name === "Alcohol (MQ3)");
-              if (alcohol1) alcohol1.value = last_data[0].alcohol1 ? last_data[0].alcohol1 as number : 0;
+            const alcohol1 = this.list.find((item) => item.name === "Alcohol (MQ3)");
+            if (alcohol1) alcohol1.value = last_data[0].alcohol1 ? last_data[0].alcohol1 as number : 0;
 
-              const alcohol2 = this.list.find((item) => item.name === "Alcohol (MQ303A)");
-              if (alcohol2) alcohol2.value = last_data[0].alcohol2 ? last_data[0].alcohol2 as number : 0;
-            }
+            const alcohol2 = this.list.find((item) => item.name === "Alcohol (MQ303A)");
+            if (alcohol2) alcohol2.value = last_data[0].alcohol2 ? last_data[0].alcohol2 as number : 0;
           }
-        }, 3000)
+        }
       });
     }
   }
