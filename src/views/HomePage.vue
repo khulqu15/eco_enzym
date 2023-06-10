@@ -61,12 +61,12 @@ export default defineComponent({
   data() {
     return {
       list: [
-        { name: '', value: 0.0}
+        { name: '', value: 0.0, unit: ''}
       ],
       header: '',
       databaseData: [],
       data: [
-        { name: 'Alcohol (MQ3)', unit: 'Percentage (%)', value: 0 },
+        // { name: 'Alcohol (MQ3)', unit: 'Percentage (%)', value: 0 },
         { name: 'Alcohol (MQ303A)', unit: 'Percentage (%)', value: 0 },
         { name: 'PH Meter', unit: null, value: 0 },
         { name: 'Ozon', unit: 'PPM', value: 0 },
@@ -104,7 +104,7 @@ export default defineComponent({
               if (ozon) ozon.value = last_data[0].ozone_ppm as number;
 
               const temp = this.list.find((item) => item.name === "Temperature");
-              if (temp) temp.value = last_data[0].temp_w as number;
+              if (temp) temp.value = last_data[0].temperature as number;
 
               const ph = this.list.find((item) => item.name === "PH Meter");
               if (ph) ph.value = last_data[0].ph ? last_data[0].ph as number : 0;

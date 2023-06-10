@@ -1,7 +1,7 @@
 <template>
   <ion-page>
     <ion-content>
-      <div class="bg-base-200 min-h-screen overflow-y-auto pb-48">
+      <div class="bg-base-200 min-h-screen overflow-y-auto pb-24">
         <top-navigation/>
         <div class="px-8">
           <div class="bg-base-100 relative w-full rounded-2xl overflow-hidden">
@@ -19,14 +19,6 @@
               <h4 class="font-bold text-base-content mb-4">Data EcoEnzyme</h4>
               <draggable v-model="list" class="space-y-5" :header="header" :element="'div'" :options="{handle: '.drag-handle'}" @update="onListUpdate">
                 <div v-for="(item, index) in list" class="bg-base-100 p-4 relative grid-cols-1 grid text-base-content rounded-2xl flex justify-between items-center" :key="`data-${index}`">
-                  <div class="dropdown dropdown-end absolute right-0 top-0">
-                    <button class="btn w-8 p-0 btn-ghost">
-                      <Icon icon="ion:ellipsis-vertical" />
-                    </button>
-                    <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-                      <li><a class="active:bg-primary">Lihat Semua Data</a></li>
-                    </ul>
-                  </div>
                   <div class="flex gap-x-3 items-center">
                     <Icon icon="ic:baseline-drag-indicator" class="drag-handle opacity-50" />
                     <h5 class="font-bold">{{ item.name }}</h5>
@@ -54,23 +46,31 @@ import TopNavigation from '@/components/TopNavigation.vue'
 import { defineComponent } from 'vue'
 import { Icon } from '@iconify/vue';
 import { VueDraggableNext } from 'vue-draggable-next'
+import { ref, onValue } from 'firebase/database';
+import { IonPage, IonContent } from '@ionic/vue'
+import { db } from '@/firebase';
 
 export default defineComponent({
   components: {
+    IonPage,
+    IonContent,
     TopNavigation,
     Icon,
     draggable: VueDraggableNext,
   },
   data() {
     return {
-      list: [],
+      list: [
+        { name: '', value: 0.0, unit: ''}
+      ],
       header: '',
+      databaseData: [],
       data: [
-        { name: 'Alcohol (MQ3)', unit: 'Percentage (%)', value: 79 },
-        { name: 'Alcohol (MQ303A)', unit: 'Percentage (%)', value: 68 },
-        { name: 'PH Meter', unit: null, value: 5.32 },
-        { name: 'Ozon', unit: 'PPM', value: 190 },
-        { name: 'Temperature', unit: 'Celcius', value: 32 },
+        // { name: 'Alcohol (MQ3)', unit: 'Percentage (%)', value: 0 },
+        { name: 'Alcohol (MQ303A)', unit: 'Percentage (%)', value: 0 },
+        { name: 'PH Meter', unit: null, value: 0 },
+        { name: 'Ozon', unit: 'PPM', value: 0 },
+        { name: 'Temperature', unit: 'Celcius', value: 0 },
       ]
     }
   },
@@ -82,10 +82,42 @@ export default defineComponent({
     }
     this.list = JSON.parse(listData)
     console.log(this.list)
+    this.getLatestData();
   },
   methods: {
     onListUpdate(event: any) {
       localStorage.setItem('data', JSON.stringify(this.list))
+    },
+    getLatestData() {
+      const dataRef = ref(db, '/'); // Replace '/' with the path to your data
+      onValue(dataRef, (snapshot) => {
+        const data = snapshot.val();
+        const output: any = Object.entries(data.data).map(([key, value]) => {
+          return {[key]: value}
+        })
+        const limit: any = output.slice(-10)
+        const last_data: any = Object.values(limit[limit.length - 1])
+        setTimeout(() => {
+          if(this.list != null && this.list != undefined) {
+            if(this.list.length != null && this.list.length > 1) {
+              const ozon = this.list.find((item) => item.name === "Ozon");
+              if (ozon) ozon.value = last_data[0].ozone_ppm as number;
+
+              const temp = this.list.find((item) => item.name === "Temperature");
+              if (temp) temp.value = last_data[0].temperature as number;
+
+              const ph = this.list.find((item) => item.name === "PH Meter");
+              if (ph) ph.value = last_data[0].ph ? last_data[0].ph as number : 0;
+
+              const alcohol1 = this.list.find((item) => item.name === "Alcohol (MQ3)");
+              if (alcohol1) alcohol1.value = last_data[0].alcohol1 ? last_data[0].alcohol1 as number : 0;
+
+              const alcohol2 = this.list.find((item) => item.name === "Alcohol (MQ303A)");
+              if (alcohol2) alcohol2.value = last_data[0].alcohol2 ? last_data[0].alcohol2 as number : 0;
+            }
+          }
+        }, 1000)
+      });
     }
   }
 })
