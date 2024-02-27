@@ -17,8 +17,8 @@
           <div v-if="list.length > 0">
             <div v-if="header != ''">
               <h4 class="font-bold text-base-content mb-4">Data EcoEnzyme</h4>
-              <div class="w-full">
-                <Line class="w-full h-64" :data="chartData" :options="chartOptions"></Line>
+              <div>
+                <LineChart :chart-data="chartData" :options="chartOptions"></LineChart>
               </div>
               <draggable v-model="list" class="space-y-5" :header="header" :element="'div'" :options="{handle: '.drag-handle'}" @update="onListUpdate">
                 <div v-for="(item, index) in list" class="bg-base-100 p-4 relative grid-cols-1 grid text-base-content rounded-2xl flex justify-between items-center" :key="`data-${index}`">
@@ -52,36 +52,14 @@ import { VueDraggableNext } from 'vue-draggable-next'
 import { ref, onValue } from 'firebase/database';
 import { IonPage, IonContent } from '@ionic/vue'
 import { db } from '@/firebase';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-} from 'chart.js'
-import { Line } from 'vue-chartjs'
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-)
+import { Line } from 'vue-chartjs';
+import { ChartData, ChartOptions } from 'chart.js';
 
 export default defineComponent({
-  name: "HomePage",
-  // eslint-disable-next-line
-  /* eslint-disable */
   components: {
     IonPage,
     IonContent,
-    Line,
+    LineChart: Line,
     TopNavigation,
     Icon,
     draggable: VueDraggableNext,
@@ -94,14 +72,21 @@ export default defineComponent({
       chartData: {
         labels: ['2024-01-01', '2024-01-02', '2024-01-03'], // Example dates
         datasets: [{
-          label: 'My First Dataset',
-          data: [10, 20, 30],
-          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          label: 'My Time Series',
+          data: [10, 20, 30], // Example data points
+          fill: false,
+          borderColor: 'blue'
         }]
       },
       chartOptions: {
-        responsive: true,
-        maintainAspectRatio: false,
+        scales: {
+          x: {
+            type: 'time',
+            time: {
+              unit: 'day'
+            }
+          }
+        }
       },
       header: '',
       databaseData: [],
@@ -115,7 +100,7 @@ export default defineComponent({
     }
   },
   mounted() {
-    console.log('FETCH DATA')
+    this.fetchData()
   },
   created() {
     this.header = 'My List';
@@ -125,8 +110,6 @@ export default defineComponent({
     }
     this.list = JSON.parse(listData)
     console.log(this.list)
-    console.log('FETCH DATA')
-    // this.fetchData()
     this.getLatestData();
   },
   methods: {
@@ -134,13 +117,16 @@ export default defineComponent({
       localStorage.setItem('data', JSON.stringify(this.list))
     },
     fetchData() {
-      const data = {
+      let data_chart = {
         labels: ['2024-01-01', '2024-01-02', '2024-01-03'], // Example dates
         datasets: [{
-          data: [10, 20, 30],
+          label: 'My Time Series',
+          data: [10, 20, 30], // Example data points
+          fill: false,
+          borderColor: 'blue'
         }]
       };
-      console.log("CHART DATA:")
+      this.chartData = data_chart;
       console.log(this.chartData)
     },
     getLatestData() {

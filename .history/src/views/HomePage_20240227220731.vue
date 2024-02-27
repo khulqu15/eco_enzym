@@ -17,9 +17,7 @@
           <div v-if="list.length > 0">
             <div v-if="header != ''">
               <h4 class="font-bold text-base-content mb-4">Data EcoEnzyme</h4>
-              <div class="w-full">
-                <Line class="w-full h-64" :data="chartData" :options="chartOptions"></Line>
-              </div>
+              <zing-chart :data="charts"/>
               <draggable v-model="list" class="space-y-5" :header="header" :element="'div'" :options="{handle: '.drag-handle'}" @update="onListUpdate">
                 <div v-for="(item, index) in list" class="bg-base-100 p-4 relative grid-cols-1 grid text-base-content rounded-2xl flex justify-between items-center" :key="`data-${index}`">
                   <div class="flex gap-x-3 items-center">
@@ -52,36 +50,14 @@ import { VueDraggableNext } from 'vue-draggable-next'
 import { ref, onValue } from 'firebase/database';
 import { IonPage, IonContent } from '@ionic/vue'
 import { db } from '@/firebase';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-} from 'chart.js'
-import { Line } from 'vue-chartjs'
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-)
+import 'zingchart/es6'
+import ZingChart from 'zingchart-web-component';
+customElements.define('zing-chart', ZingChart);
 
 export default defineComponent({
-  name: "HomePage",
-  // eslint-disable-next-line
-  /* eslint-disable */
   components: {
     IonPage,
     IonContent,
-    Line,
     TopNavigation,
     Icon,
     draggable: VueDraggableNext,
@@ -91,17 +67,12 @@ export default defineComponent({
       list: [
         { name: '', value: 0.0, unit: ''}
       ],
-      chartData: {
-        labels: ['2024-01-01', '2024-01-02', '2024-01-03'], // Example dates
-        datasets: [{
-          label: 'My First Dataset',
-          data: [10, 20, 30],
-          backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        }]
-      },
-      chartOptions: {
-        responsive: true,
-        maintainAspectRatio: false,
+      charts: {
+        type: 'lines',
+        title: {
+          text: 'EcoEnzyme Data'
+        },
+        series: [0, 0, 0, 0, 0 ,0]
       },
       header: '',
       databaseData: [],
@@ -114,9 +85,6 @@ export default defineComponent({
       ]
     }
   },
-  mounted() {
-    console.log('FETCH DATA')
-  },
   created() {
     this.header = 'My List';
     const listData: any = localStorage.getItem('data')
@@ -125,23 +93,11 @@ export default defineComponent({
     }
     this.list = JSON.parse(listData)
     console.log(this.list)
-    console.log('FETCH DATA')
-    // this.fetchData()
     this.getLatestData();
   },
   methods: {
     onListUpdate(event: any) {
       localStorage.setItem('data', JSON.stringify(this.list))
-    },
-    fetchData() {
-      const data = {
-        labels: ['2024-01-01', '2024-01-02', '2024-01-03'], // Example dates
-        datasets: [{
-          data: [10, 20, 30],
-        }]
-      };
-      console.log("CHART DATA:")
-      console.log(this.chartData)
     },
     getLatestData() {
       const dataRef = ref(db, '/'); // Replace '/' with the path to your data

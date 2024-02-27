@@ -76,8 +76,6 @@ ChartJS.register(
 
 export default defineComponent({
   name: "HomePage",
-  // eslint-disable-next-line
-  /* eslint-disable */
   components: {
     IonPage,
     IonContent,
