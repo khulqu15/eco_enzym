@@ -16,8 +16,25 @@
         <div class="px-8 mt-8">
           <div v-if="list.length > 0">
             <div v-if="header != ''">
-              <h4 class="font-bold text-base-content mb-4">Data EcoEnzyme</h4>
-              <div class="w-full">
+              <h4 class="font-bold text-base-content mb-4">Data Fermentasi 1</h4>
+              <div class="w-full mb-2">
+                <Line class="w-full h-64" :data="chartData" :options="chartOptions"></Line>
+              </div>
+              <draggable v-model="list" class="space-y-5" :header="header" :element="'div'" :options="{handle: '.drag-handle'}" @update="onListUpdate">
+                <div v-for="(item, index) in list" class="bg-base-100 p-4 relative grid-cols-1 grid text-base-content rounded-2xl flex justify-between items-center" :key="`data-${index}`">
+                  <div class="flex gap-x-3 items-center">
+                    <Icon icon="ic:baseline-drag-indicator" class="drag-handle opacity-50" />
+                    <h5 class="font-bold">{{ item.name }}</h5>
+                  </div>
+                  <div class="flex gap-x-2 justify-end items-end">
+                    <h4 class="text-primary m-0 font-bold">{{ item.value }}</h4>
+                    <p class="text-sm">{{ item.unit }}</p>
+                  </div>
+                </div>
+              </draggable>
+
+              <h4 class="font-bold text-base-content mb-4">Data Fermentasi 2</h4>
+              <div class="w-full mb-2">
                 <Line class="w-full h-64" :data="chartData" :options="chartOptions"></Line>
               </div>
               <draggable v-model="list" class="space-y-5" :header="header" :element="'div'" :options="{handle: '.drag-handle'}" @update="onListUpdate">
@@ -94,9 +111,24 @@ export default defineComponent({
       chartData: {
         labels: ['2024-01-01', '2024-01-02', '2024-01-03'], // Example dates
         datasets: [{
-          label: 'My First Dataset',
+          label: 'Alcohol',
           data: [10, 20, 30],
           backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        },
+        {
+          label: 'PH Meter',
+          data: [20, 14, 10],
+          backgroundColor: 'rgba(100, 230, 100, 0.5)',// Change the color
+        },
+        {
+          label: 'Temperature',
+          data: [32, 30, 36],
+          backgroundColor: 'rgba(100, 230, 200, 0.5)',// Change the color
+        },
+        {
+          label: 'Ozon',
+          data: [30, 24, 12],
+          backgroundColor: 'rgba(255, 200, 40, 0.2)',
         }]
       },
       chartOptions: {
