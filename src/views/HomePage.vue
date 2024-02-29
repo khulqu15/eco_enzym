@@ -1,62 +1,150 @@
 <template>
   <ion-page>
-    <ion-content>
-      <div class="bg-base-200 min-h-screen overflow-y-auto pb-24">
-        <top-navigation/>
-        <div class="px-8">
-          <div class="bg-base-100 relative w-full rounded-2xl overflow-hidden">
-            <img src="/assets/home.svg" alt="Home" class="absolute top-0 opacity-20 -right-20">
-            <div class="w-10/12 p-8 relative">
-              <h4 class="text-primary m-0 font-bold">Monitoring Sensor IoT Secara Real-Time dengan EcoEnzyme</h4>
-              <p class="text-base-content mt-3">Mempermudah Monitoring Sensor IoT dengan Tampilan User-Friendly</p>
-            </div>
-            <div class="w-full bg-primary p-2 rounded-2xl"></div>
-          </div>
-        </div>
-        <div class="px-8 mt-8">
-          <div v-if="list.length > 0">
-            <div v-if="header != ''">
-              <h4 class="font-bold text-base-content mb-4">Data Fermentasi 1</h4>
-              <div class="w-full mb-2">
-                <Line class="w-full h-64" :data="chartData" :options="chartOptions"></Line>
-              </div>
-              <draggable v-model="list" class="space-y-5" :header="header" :element="'div'" :options="{handle: '.drag-handle'}" @update="onListUpdate">
-                <div v-for="(item, index) in list" class="bg-base-100 p-4 relative grid-cols-1 grid text-base-content rounded-2xl flex justify-between items-center" :key="`data-${index}`">
-                  <div class="flex gap-x-3 items-center">
-                    <Icon icon="ic:baseline-drag-indicator" class="drag-handle opacity-50" />
-                    <h5 class="font-bold">{{ item.name }}</h5>
-                  </div>
-                  <div class="flex gap-x-2 justify-end items-end">
-                    <h4 class="text-primary m-0 font-bold">{{ item.value }}</h4>
-                    <p class="text-sm">{{ item.unit }}</p>
-                  </div>
+      <div class="drawer drawer-mobile">
+        <input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
+        <div class="drawer-content bg-base-200 flex flex-col items-center justify-center">
+          <!-- Page content here -->
+          
+          <div class="bg-base-200 min-h-screen overflow-y-auto w-full pb-24 relative">
+            <label for="my-drawer-2" class="btn absolute left-4 top-4 z-20 btn-primary lg:hidden drawer-button">Menu</label>
+            
+            <top-navigation/>
+            <div class="px-8">
+              <div class="bg-base-100 relative w-full rounded-2xl overflow-hidden">
+                <img src="/assets/home.svg" alt="Home" class="absolute -top-10 opacity-20 -right-20">
+                <div class="w-10/12 p-8 relative">
+                  <h4 class="text-primary m-0 font-bold">Monitoring Sensor IoT Secara Real-Time dengan EcoEnzyme</h4>
+                  <p class="text-base-content mt-3">Mempermudah Monitoring Sensor IoT dengan Tampilan User-Friendly</p>
                 </div>
-              </draggable>
+                <div class="w-full bg-primary p-2 rounded-2xl"></div>
+              </div>
+            </div>
+            <div class="px-8 mt-8">
+              <div class="btn-group mb-3">
+                <button @click="show_data = 'all'" :class="{'btn-active': show_data == 'all', 'bg-base-300 text-base-content': show_data != 'all'}" class="btn">Semua</button>
+                <button @click="show_data = 'fermentation1'" :class="{'btn-active': show_data == 'fermentation1', 'bg-base-300 text-base-content': show_data != 'fermentation1'}" class="btn">Fermentasi 1</button>
+                <button @click="show_data = 'fermentation2'" :class="{'btn-active': show_data == 'fermentation2', 'bg-base-300 text-base-content': show_data != 'fermentation2'}" class="btn">Fermentasi 2</button>
+              </div>
+              <div v-if="list.length > 0">
+                <div v-if="header != ''">
+                  <div class="grid gap-4" :class="{'lg:grid-cols-2 grid-cols-1': show_data == 'all', 'grid-cols-1': show_data != 'all'}">
+                    <div v-if="show_data == 'all' || show_data == 'fermentation1'">
+                      <h4 class="font-bold text-base-content mb-4">Data Fermentasi 1</h4>
+                      <div class="w-full mb-2">
+                        <Line class="w-full h-64" :data="chartData" :options="chartOptions"></Line>
+                      </div>
+                      <div class="btn-group mb-3 mt-3">
+                        <button @click="data1_type = 'newest'" :class="{'btn-active': data1_type == 'newest', 'bg-base-300 text-base-content': data1_type != 'newest'}" class="btn">Terbaru</button>
+                        <button @click="data1_type = 'histories'" :class="{'btn-active': data1_type == 'histories', 'bg-base-300 text-base-content': data1_type != 'histories'}" class="btn">Tabel Historis</button>
+                      </div>
+                      <draggable v-if="data1_type == 'newest'" v-model="list" class="space-y-5" :header="header" :element="'div'" :options="{handle: '.drag-handle'}" @update="onListUpdate">
+                        <div v-for="(item, index) in list" class="bg-base-100 p-4 relative grid-cols-1 grid text-base-content rounded-2xl flex justify-between items-center" :key="`data-${index}`">
+                          <div class="flex gap-x-3 items-center">
+                            <Icon icon="ic:baseline-drag-indicator" class="drag-handle opacity-50" />
+                            <h5 class="font-bold">{{ item.name }}</h5>
+                          </div>
+                          <div class="flex gap-x-2 justify-end items-end">
+                            <h4 class="text-primary m-0 font-bold">{{ item.value }}</h4>
+                            <p class="text-sm">{{ item.unit }}</p>
+                          </div>
+                        </div>
+                      </draggable>
+                      <div v-if="data1_type == 'histories'">
+                        <div class="overflow-x-auto">
+                          <table class="table table-compact w-full">
+                            <thead>
+                              <tr>
+                                <th>Timestamp</th>
+                                <th>Alkohol1</th>
+                                <th>Alkohol2</th>
+                                <th>Ozon</th>
+                                <th>Ph</th>
+                                <th>Temperature</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr v-for="(item, index) in data1" :key="`data-${index}`">
+                                <td>{{ item.key }}</td>
+                                <td>{{ item.alcohol1 }}</td>
+                                <td>{{ item.alcohol2 }}</td>
+                                <td>{{ item.ozone_ppm }}</td>
+                                <td>{{ item.ph }}</td>
+                                <td>{{ item.temperature }}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                    <div v-if="show_data == 'all' || show_data == 'fermentation2'">
+                      <h4 class="font-bold text-base-content mb-4">Data Fermentasi 2</h4>
+                      <div class="w-full mb-2">
+                        <Line class="w-full h-64" :data="chartData" :options="chartOptions"></Line>
+                      </div>
+                      <div class="btn-group mb-3 mt-3">
+                        <button @click="data2_type = 'newest'" :class="{'btn-active': data2_type == 'newest', 'bg-base-300 text-base-content': data2_type != 'newest'}" class="btn">Terbaru</button>
+                        <button @click="data2_type = 'histories'" :class="{'btn-active': data2_type == 'histories', 'bg-base-300 text-base-content': data2_type != 'histories'}" class="btn">Tabel Historis</button>
+                      </div>
+                      <draggable v-if="data2_type == 'newest'" v-model="list" class="space-y-5" :header="header" :element="'div'" :options="{handle: '.drag-handle'}" @update="onListUpdate">
+                        <div v-for="(item, index) in list" class="bg-base-100 p-4 relative grid-cols-1 grid text-base-content rounded-2xl flex justify-between items-center" :key="`data-${index}`">
+                          <div class="flex gap-x-3 items-center">
+                            <Icon icon="ic:baseline-drag-indicator" class="drag-handle opacity-50" />
+                            <h5 class="font-bold">{{ item.name }}</h5>
+                          </div>
+                          <div class="flex gap-x-2 justify-end items-end">
+                            <h4 class="text-primary m-0 font-bold">{{ item.value }}</h4>
+                            <p class="text-sm">{{ item.unit }}</p>
+                          </div>
+                        </div>
+                      </draggable>
+                      <div v-if="data2_type == 'histories'">
+                        <div class="overflow-x-auto">
+                          <table class="table table-compact w-full">
+                            <thead>
+                              <tr>
+                                <th>Timestamp</th>
+                                <th>Alkohol1</th>
+                                <th>Alkohol2</th>
+                                <th>Ozon</th>
+                                <th>Ph</th>
+                                <th>Temperature</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr v-for="(item, index) in data2" :key="`data-${index}`">
+                                <td>{{ item.key }}</td>
+                                <td>{{ item.alcohol1 }}</td>
+                                <td>{{ item.alcohol2 }}</td>
+                                <td>{{ item.ozone_ppm }}</td>
+                                <td>{{ item.ph }}</td>
+                                <td>{{ item.temperature }}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                    </div>
+                  </div>
+              </div>
+              <div v-else>
+                <img src="/assets/loading.svg" alt="Loading">
+              </div>
+            </div>
+          </div>
 
-              <h4 class="font-bold text-base-content mb-4">Data Fermentasi 2</h4>
-              <div class="w-full mb-2">
-                <Line class="w-full h-64" :data="chartData" :options="chartOptions"></Line>
-              </div>
-              <draggable v-model="list" class="space-y-5" :header="header" :element="'div'" :options="{handle: '.drag-handle'}" @update="onListUpdate">
-                <div v-for="(item, index) in list" class="bg-base-100 p-4 relative grid-cols-1 grid text-base-content rounded-2xl flex justify-between items-center" :key="`data-${index}`">
-                  <div class="flex gap-x-3 items-center">
-                    <Icon icon="ic:baseline-drag-indicator" class="drag-handle opacity-50" />
-                    <h5 class="font-bold">{{ item.name }}</h5>
-                  </div>
-                  <div class="flex gap-x-2 justify-end items-end">
-                    <h4 class="text-primary m-0 font-bold">{{ item.value }}</h4>
-                    <p class="text-sm">{{ item.unit }}</p>
-                  </div>
-                </div>
-              </draggable>
-            </div>
-          </div>
-          <div v-else>
-            <img src="/assets/loading.svg" alt="Loading">
-          </div>
+
+        </div> 
+        <div class="drawer-side">
+          <label for="my-drawer-2" aria-label="close sidebar" class="drawer-overlay"></label> 
+          <ul class="menu p-4 w-80 min-h-full bg-base-100 text-base-content">
+            <!-- Sidebar content here -->
+            <li><a>Sidebar Item 1</a></li>
+            <li><a>Sidebar Item 2</a></li>
+          </ul>
+        
         </div>
       </div>
-    </ion-content>
   </ion-page>
 </template>
 
@@ -108,6 +196,11 @@ export default defineComponent({
       list: [
         { name: '', value: 0.0, unit: ''}
       ],
+      data1_type: 'newest',
+      data2_type: 'newest',
+      data1: [],
+      data2: [],
+      show_data: 'all',
       chartData: {
         labels: ['2024-01-01', '2024-01-02', '2024-01-03'], // Example dates
         datasets: [{
@@ -182,7 +275,17 @@ export default defineComponent({
         const output: any = Object.entries(data.data).map(([key, value]) => {
           return {[key]: value}
         })
+        // change object to array {object key, object value 1, object value 2}
+        let result: any = []
+        let table_data = output.map((item: any) => {
+          const key = Object.keys(item)[0]
+          const value: any = Object.values(item)[0]
+          return {key, ...value}
+        })
         const limit: any = output.slice(-10)
+        this.data1 = table_data.slice(-10)
+        this.data2 = table_data.slice(-10)
+        console.log(this.data1)
         const last_data: any = Object.values(limit[limit.length - 1])
         setTimeout(() => {
           if(this.list != null && this.list != undefined) {
