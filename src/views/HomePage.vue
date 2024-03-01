@@ -204,9 +204,14 @@ export default defineComponent({
       chartData: {
         labels: ['2024-01-01', '2024-01-02', '2024-01-03'], // Example dates
         datasets: [{
-          label: 'Alcohol',
+          label: 'Alcohol1',
           data: [10, 20, 30],
-          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          backgroundColor: 'rgba(255, 99, 132, 0.5)',
+        },
+        {
+          label: 'Alcohol2',
+          data: [10, 20, 30],
+          backgroundColor: 'rgba(100, 150, 255, 0.5)',
         },
         {
           label: 'PH Meter',
@@ -221,7 +226,7 @@ export default defineComponent({
         {
           label: 'Ozon',
           data: [30, 24, 12],
-          backgroundColor: 'rgba(255, 200, 40, 0.2)',
+          backgroundColor: 'rgba(255, 200, 40, 0.5)',
         }]
       },
       chartOptions: {
@@ -277,15 +282,34 @@ export default defineComponent({
         })
         // change object to array {object key, object value 1, object value 2}
         let result: any = []
+        let labels1: any = []
+        let alcohol1_1: any = []
+        let alcohol2_1: any = []
+        let ph_1: any = []
+        let temperature1: any = []
+        let ozon1: any = []
+
         let table_data = output.map((item: any) => {
           const key = Object.keys(item)[0]
           const value: any = Object.values(item)[0]
-          return {key, ...value}
+          labels1.push(key)
+          alcohol1_1.push(value.alcohol1)
+          alcohol2_1.push(value.alcohol2)
+          ph_1.push(value.ph)
+          temperature1.push(value.temperature)
+          ozon1.push(value.ozone_ppm)
+          return { key, ...value }
         })
         const limit: any = output.slice(-10)
+        this.chartData.labels = labels1.slice(-10)
+        this.chartData.datasets[0].data = alcohol1_1.slice(-10)
+        this.chartData.datasets[1].data = alcohol2_1.slice(-10)
+        this.chartData.datasets[2].data = ph_1.slice(-10)
+        this.chartData.datasets[3].data = temperature1.slice(-10)
+        this.chartData.datasets[4].data = ozon1.slice(-10)
+
         this.data1 = table_data.slice(-10)
         this.data2 = table_data.slice(-10)
-        console.log(this.data1)
         const last_data: any = Object.values(limit[limit.length - 1])
         setTimeout(() => {
           if(this.list != null && this.list != undefined) {
