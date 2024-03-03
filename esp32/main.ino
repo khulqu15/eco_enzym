@@ -5,8 +5,8 @@
 #include "addons/TokenHelper.h"
 #include "addons/RTDBHelper.h"
 
-#define WIFI_SSID "GH D-Team"
-#define WIFI_PASSWORD "Jancokcokasulah"
+#define WIFI_SSID "123"
+#define WIFI_PASSWORD "11111111"
 #define API_KEY "AIzaSyC-mHNOM1cUsizZqeMH9YzmyiKAljTO6pI"
 #define DATABASE_URL "https://ecoenzym-d56ec-default-rtdb.asia-southeast1.firebasedatabase.app"
 
@@ -32,7 +32,9 @@ void setup() {
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
+    Serial.print(".");
   }
+  Serial.print("Connected");
 
   config.api_key = API_KEY;
   config.database_url = DATABASE_URL;
@@ -48,16 +50,16 @@ void setup() {
 String getFormattedDate() {
   timeClient.update();
   unsigned long epochTime = timeClient.getEpochTime();
-  struct tm *ptm = localtime(&epochTime); // Changed from gmtime to localtime
+  struct tm *ptm = localtime((const time_t *)&epochTime); // Changed from gmtime to localtime
   
   char dateBuffer[30]; // Buffer to hold the formatted date and time
-  // Format date and time: "20 Maret 2024 10:24"
+  // Format date and time: "02 Maret 2024 10:24"
   strftime(dateBuffer, sizeof(dateBuffer), "%d %B %Y %H:%M", ptm);
   return String(dateBuffer);
 }
 
 void loop() {
-  if ((millis() - sendDataPrevMillis > 15000) || (sendDataPrevMillis == 0)) {
+
     sendDataPrevMillis = millis();
 
     // Get formatted date and time
@@ -73,9 +75,24 @@ void loop() {
     // Send data to Firebase
     if (Firebase.ready() && signupOK) {
       Firebase.RTDB.setFloat(&fdbo, dateTime + "/MQGas", mqGasValue);
+      Serial.println("Data Alcohol Terupload");
       Firebase.RTDB.setFloat(&fdbo, dateTime + "/MQ131", mq131Value);
+      Serial.println("Data Ozon Terupload");
       Firebase.RTDB.setFloat(&fdbo, dateTime + "/pH", pHValue);
+      Serial.println("Data pH Terupload");
       Firebase.RTDB.setFloat(&fdbo, dateTime + "/Temperature", tempValue);
+      Serial.println("Data Temperature Terupload");
     }
-  }
+    
+    Serial.println("------------------------------------------------");
+    Serial.print("Sensor Alcohol : ");
+    Serial.println(mqGasValue);
+    Serial.print("Sensor Ozon : ");
+    Serial.println(mq131Value);
+    Serial.print("Sensor pH : ");
+    Serial.println(pHValue);
+    Serial.print("Sensor Temperatur : ");
+    Serial.println(tempValue);
+    delay(5000);
 }
+
