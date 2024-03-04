@@ -20,10 +20,17 @@
               </div>
             </div>
             <div class="px-8 mt-8">
-              <div class="btn-group mb-3">
-                <button @click="show_data = 'all'" :class="{'btn-active': show_data == 'all', 'bg-base-300 text-base-content': show_data != 'all'}" class="btn">Semua</button>
-                <button @click="show_data = 'fermentation1'" :class="{'btn-active': show_data == 'fermentation1', 'bg-base-300 text-base-content': show_data != 'fermentation1'}" class="btn">Fermentasi 1</button>
-                <button @click="show_data = 'fermentation2'" :class="{'btn-active': show_data == 'fermentation2', 'bg-base-300 text-base-content': show_data != 'fermentation2'}" class="btn">Fermentasi 2</button>
+              <div class="grid md:grid-cols-2 grid-cols-1 gap-4">
+                <div>
+                  <div class="btn-group mb-3">
+                    <button @click="show_data = 'all'" :class="{'btn-active': show_data == 'all', 'bg-base-300 text-base-content': show_data != 'all'}" class="btn">Semua</button>
+                    <button @click="show_data = 'fermentation1'" :class="{'btn-active': show_data == 'fermentation1', 'bg-base-300 text-base-content': show_data != 'fermentation1'}" class="btn">Fermentasi 1</button>
+                    <button @click="show_data = 'fermentation2'" :class="{'btn-active': show_data == 'fermentation2', 'bg-base-300 text-base-content': show_data != 'fermentation2'}" class="btn">Fermentasi 2</button>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <button class="btn btn-primary md:w-auto w-full" @click="exportData(0)">Export All</button>
+                </div>
               </div>
               <div v-if="list.length > 0">
                 <div v-if="header != ''">
@@ -33,12 +40,15 @@
                       <div class="w-full mb-2">
                         <Line class="w-full h-64" :data="chartData" :options="chartOptions"></Line>
                       </div>
-                      <div class="btn-group mb-3 mt-3">
-                        <button @click="data1_type = 'newest'" :class="{'btn-active': data1_type == 'newest', 'bg-base-300 text-base-content': data1_type != 'newest'}" class="btn">Terbaru</button>
-                        <button @click="data1_type = 'histories'" :class="{'btn-active': data1_type == 'histories', 'bg-base-300 text-base-content': data1_type != 'histories'}" class="btn">Tabel Historis</button>
+                      <div class="flex w-full justify-between items-center">
+                        <div class="btn-group mb-3 mt-3">
+                          <button @click="data1_type = 'newest'" :class="{'btn-active': data1_type == 'newest', 'bg-base-300 text-base-content': data1_type != 'newest'}" class="btn">Terbaru</button>
+                          <button @click="data1_type = 'histories'" :class="{'btn-active': data1_type == 'histories', 'bg-base-300 text-base-content': data1_type != 'histories'}" class="btn">Tabel Historis</button>
+                        </div>
+                        <button class="btn btn-primary" @click="exportData(1)">Export</button>
                       </div>
-                      <draggable v-if="data1_type == 'newest'" v-model="list" class="space-y-5" :header="header" :element="'div'" :options="{handle: '.drag-handle'}" @update="onListUpdate">
-                        <div v-for="(item, index) in list" class="bg-base-100 p-4 relative grid-cols-1 grid text-base-content rounded-2xl flex justify-between items-center" :key="`data-${index}`">
+                      <draggable v-if="data1_type == 'newest'" v-model="last_data_1" class="space-y-5" :header="header" :element="'div'" :options="{handle: '.drag-handle'}" @update="onListUpdate">
+                        <div v-for="(item, index) in last_data_1" class="bg-base-100 p-4 relative grid-cols-1 grid text-base-content rounded-2xl flex justify-between items-center" :key="`data-${index}`">
                           <div class="flex gap-x-3 items-center">
                             <Icon icon="ic:baseline-drag-indicator" class="drag-handle opacity-50" />
                             <h5 class="font-bold">{{ item.name }}</h5>
@@ -55,9 +65,8 @@
                             <thead>
                               <tr>
                                 <th>Timestamp</th>
-                                <th>Alkohol1</th>
-                                <th>Alkohol2</th>
-                                <th>Ozon</th>
+                                <th>MQ131</th>
+                                <th>MQGas</th>
                                 <th>Ph</th>
                                 <th>Temperature</th>
                               </tr>
@@ -65,11 +74,10 @@
                             <tbody>
                               <tr v-for="(item, index) in data1" :key="`data-${index}`">
                                 <td>{{ item.key }}</td>
-                                <td>{{ item.alcohol1 }}</td>
-                                <td>{{ item.alcohol2 }}</td>
-                                <td>{{ item.ozone_ppm }}</td>
-                                <td>{{ item.ph }}</td>
-                                <td>{{ item.temperature }}</td>
+                                <td>{{ item.MQ131 }}</td>
+                                <td>{{ item.MQGas }}</td>
+                                <td>{{ item.pH }}</td>
+                                <td>{{ item.Temperature }}</td>
                               </tr>
                             </tbody>
                           </table>
@@ -81,12 +89,15 @@
                       <div class="w-full mb-2">
                         <Line class="w-full h-64" :data="chartData" :options="chartOptions"></Line>
                       </div>
-                      <div class="btn-group mb-3 mt-3">
-                        <button @click="data2_type = 'newest'" :class="{'btn-active': data2_type == 'newest', 'bg-base-300 text-base-content': data2_type != 'newest'}" class="btn">Terbaru</button>
-                        <button @click="data2_type = 'histories'" :class="{'btn-active': data2_type == 'histories', 'bg-base-300 text-base-content': data2_type != 'histories'}" class="btn">Tabel Historis</button>
+                      <div class="flex items-center justify-between w-full">
+                        <div class="btn-group mb-3 mt-3">
+                          <button @click="data2_type = 'newest'" :class="{'btn-active': data2_type == 'newest', 'bg-base-300 text-base-content': data2_type != 'newest'}" class="btn">Terbaru</button>
+                          <button @click="data2_type = 'histories'" :class="{'btn-active': data2_type == 'histories', 'bg-base-300 text-base-content': data2_type != 'histories'}" class="btn">Tabel Historis</button>
+                        </div>
+                        <button class="btn btn-primary" @click="exportData(2)">Export</button>
                       </div>
-                      <draggable v-if="data2_type == 'newest'" v-model="list" class="space-y-5" :header="header" :element="'div'" :options="{handle: '.drag-handle'}" @update="onListUpdate">
-                        <div v-for="(item, index) in list" class="bg-base-100 p-4 relative grid-cols-1 grid text-base-content rounded-2xl flex justify-between items-center" :key="`data-${index}`">
+                      <draggable v-if="data2_type == 'newest'" v-model="last_data_2" class="space-y-5" :header="header" :element="'div'" :options="{handle: '.drag-handle'}" @update="onListUpdate">
+                        <div v-for="(item, index) in last_data_2" class="bg-base-100 p-4 relative grid-cols-1 grid text-base-content rounded-2xl flex justify-between items-center" :key="`data-${index}`">
                           <div class="flex gap-x-3 items-center">
                             <Icon icon="ic:baseline-drag-indicator" class="drag-handle opacity-50" />
                             <h5 class="font-bold">{{ item.name }}</h5>
@@ -103,9 +114,8 @@
                             <thead>
                               <tr>
                                 <th>Timestamp</th>
-                                <th>Alkohol1</th>
-                                <th>Alkohol2</th>
-                                <th>Ozon</th>
+                                <th>MQ131</th>
+                                <th>MQGas</th>
                                 <th>Ph</th>
                                 <th>Temperature</th>
                               </tr>
@@ -113,16 +123,18 @@
                             <tbody>
                               <tr v-for="(item, index) in data2" :key="`data-${index}`">
                                 <td>{{ item.key }}</td>
-                                <td>{{ item.alcohol1 }}</td>
-                                <td>{{ item.alcohol2 }}</td>
-                                <td>{{ item.ozone_ppm }}</td>
-                                <td>{{ item.ph }}</td>
-                                <td>{{ item.temperature }}</td>
+                                <td>{{ item.MQ131 }}</td>
+                                <td>{{ item.MQGas }}</td>
+                                <td>{{ item.pH }}</td>
+                                <td>{{ item.Temperature }}</td>
                               </tr>
                             </tbody>
                           </table>
                         </div>
                       </div>
+                    </div>
+                    <div v-if="show_data == null">
+                      <div class="w-full bg-primary inline-block text-white p-3 rounded-xl">Wait...</div>
                     </div>
                     </div>
                   </div>
@@ -200,16 +212,16 @@ export default defineComponent({
       data2_type: 'newest',
       data1: [],
       data2: [],
-      show_data: 'all',
+      show_data: null as any,
       chartData: {
         labels: ['2024-01-01', '2024-01-02', '2024-01-03'], // Example dates
         datasets: [{
-          label: 'Alcohol1',
+          label: 'MQ131',
           data: [10, 20, 30],
           backgroundColor: 'rgba(255, 99, 132, 0.5)',
         },
         {
-          label: 'Alcohol2',
+          label: 'MQGas',
           data: [10, 20, 30],
           backgroundColor: 'rgba(100, 150, 255, 0.5)',
         },
@@ -222,11 +234,6 @@ export default defineComponent({
           label: 'Temperature',
           data: [32, 30, 36],
           backgroundColor: 'rgba(100, 230, 200, 0.5)',// Change the color
-        },
-        {
-          label: 'Ozon',
-          data: [30, 24, 12],
-          backgroundColor: 'rgba(255, 200, 40, 0.5)',
         }]
       },
       chartOptions: {
@@ -235,11 +242,16 @@ export default defineComponent({
       },
       header: '',
       databaseData: [],
-      data: [
-        // { name: 'Alcohol (MQ3)', unit: 'Percentage (%)', value: 0 },
-        { name: 'Alcohol (MQ303A)', unit: 'Percentage (%)', value: 0 },
+      last_data_1: [
+        { name: 'MQ131', unit: 'PPM', value: 0 },
         { name: 'PH Meter', unit: null, value: 0 },
-        { name: 'Ozon', unit: 'PPM', value: 0 },
+        { name: 'MQGas', unit: 'PPM', value: 0 },
+        { name: 'Temperature', unit: 'Celcius', value: 0 },
+      ],
+      last_data_2: [
+        { name: 'MQ131', unit: 'PPM', value: 0 },
+        { name: 'PH Meter', unit: null, value: 0 },
+        { name: 'MQGas', unit: 'PPM', value: 0 },
         { name: 'Temperature', unit: 'Celcius', value: 0 },
       ]
     }
@@ -249,17 +261,47 @@ export default defineComponent({
   },
   created() {
     this.header = 'My List';
-    const listData: any = localStorage.getItem('data')
-    if(!listData) {
-      localStorage.setItem('data', JSON.stringify(this.data))
-    }
-    this.list = JSON.parse(listData)
-    console.log(this.list)
     console.log('FETCH DATA')
     // this.fetchData()
     this.getLatestData();
   },
   methods: {
+    exportData(fermentation: number) {
+      const data = fermentation == 1 ? this.data1 : fermentation == 2 ? this.data2 : 'all'
+      if(data == 'all') {
+        const csv = this.data1.map((item: any) => {
+          return Object.values(item).join(',')
+        }).join('\n')
+        const csv2 = this.data2.map((item: any) => {
+          return Object.values(item).join(',')
+        }).join('\n')
+        const csvData = new Blob([csv], { type: 'text/csv' })
+        const csvUrl = URL.createObjectURL(csvData)
+        const a = document.createElement('a')
+        a.href = csvUrl
+        a.download = 'data1.csv'
+        a.click()
+        URL.revokeObjectURL(csvUrl)
+        const csvData2 = new Blob([csv2], { type: 'text/csv' })
+        const csvUrl2 = URL.createObjectURL(csvData2)
+        const a2 = document.createElement('a')
+        a2.href = csvUrl2
+        a2.download = 'data2.csv'
+        a2.click()
+        URL.revokeObjectURL(csvUrl2)
+      } else {
+        const csv = data.map((item: any) => {
+          return Object.values(item).join(',')
+        }).join('\n')
+        const csvData = new Blob([csv], { type: 'text/csv' })
+        const csvUrl = URL.createObjectURL(csvData)
+        const a = document.createElement('a')
+        a.href = csvUrl
+        a.download = `data${fermentation}.csv`
+        a.click()
+        URL.revokeObjectURL(csvUrl)
+      }
+    },
     onListUpdate(event: any) {
       localStorage.setItem('data', JSON.stringify(this.list))
     },
@@ -281,55 +323,44 @@ export default defineComponent({
           return {[key]: value}
         })
         // change object to array {object key, object value 1, object value 2}
-        let result: any = []
         let labels1: any = []
-        let alcohol1_1: any = []
-        let alcohol2_1: any = []
+        let mq131_1: any = []
+        let mqgas_1: any = []
         let ph_1: any = []
-        let temperature1: any = []
-        let ozon1: any = []
+        let temperature_1: any = []
 
         let table_data = output.map((item: any) => {
           const key = Object.keys(item)[0]
           const value: any = Object.values(item)[0]
           labels1.push(key)
-          alcohol1_1.push(value.alcohol1)
-          alcohol2_1.push(value.alcohol2)
-          ph_1.push(value.ph)
-          temperature1.push(value.temperature)
-          ozon1.push(value.ozone_ppm)
+          mq131_1.push(value.MQ131)
+          mqgas_1.push(value.MQGas)
+          ph_1.push(value.pH)
+          temperature_1.push(value.Temperature)
           return { key, ...value }
         })
         const limit: any = output.slice(-10)
         this.chartData.labels = labels1.slice(-10)
-        this.chartData.datasets[0].data = alcohol1_1.slice(-10)
-        this.chartData.datasets[1].data = alcohol2_1.slice(-10)
+        this.chartData.datasets[0].data = mq131_1.slice(-10)
+        this.chartData.datasets[1].data = mqgas_1.slice(-10)
         this.chartData.datasets[2].data = ph_1.slice(-10)
-        this.chartData.datasets[3].data = temperature1.slice(-10)
-        this.chartData.datasets[4].data = ozon1.slice(-10)
+        this.chartData.datasets[3].data = temperature_1.slice(-10)
 
-        this.data1 = table_data.slice(-10)
-        this.data2 = table_data.slice(-10)
+        this.data1 = table_data.slice(-20)
+        this.data2 = table_data.slice(-20)
         const last_data: any = Object.values(limit[limit.length - 1])
         setTimeout(() => {
-          if(this.list != null && this.list != undefined) {
-            if(this.list.length != null && this.list.length > 1) {
-              const ozon = this.list.find((item) => item.name === "Ozon");
-              if (ozon) ozon.value = last_data[0].ozone_ppm as number;
+            this.last_data_1[0].value = last_data[0].MQ131 as number;
+            this.last_data_1[1].value = last_data[0].Temperature as number;
+            this.last_data_1[2].value = last_data[0].pH ? last_data[0].pH as number : 0;
+            this.last_data_1[3].value = last_data[0].MQGas ? last_data[0].MQGas as number : 0;
 
-              const temp = this.list.find((item) => item.name === "Temperature");
-              if (temp) temp.value = last_data[0].temperature as number;
 
-              const ph = this.list.find((item) => item.name === "PH Meter");
-              if (ph) ph.value = last_data[0].ph ? last_data[0].ph as number : 0;
-
-              const alcohol1 = this.list.find((item) => item.name === "Alcohol (MQ3)");
-              if (alcohol1) alcohol1.value = last_data[0].alcohol1 ? last_data[0].alcohol1 as number : 0;
-
-              const alcohol2 = this.list.find((item) => item.name === "Alcohol (MQ303A)");
-              if (alcohol2) alcohol2.value = last_data[0].alcohol2 ? last_data[0].alcohol2 as number : 0;
-            }
-          }
+            this.last_data_2[0].value = last_data[0].MQ131 as number;
+            this.last_data_2[1].value = last_data[0].Temperature as number;
+            this.last_data_2[2].value = last_data[0].pH ? last_data[0].pH as number : 0;
+            this.last_data_2[3].value = last_data[0].MQGas ? last_data[0].MQGas as number : 0;
+            this.show_data = 'all'
         }, 1000)
       });
     }
