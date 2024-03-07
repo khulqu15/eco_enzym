@@ -87,7 +87,7 @@
                     <div v-if="show_data == 'all' || show_data == 'fermentation2'">
                       <h4 class="font-bold text-base-content mb-4">Data Fermentasi 2</h4>
                       <div class="w-full mb-2">
-                        <Line class="w-full h-64" :data="chartData" :options="chartOptions"></Line>
+                        <Line class="w-full h-64" :data="chartData1" :options="chartOptions"></Line>
                       </div>
                       <div class="flex items-center justify-between w-full">
                         <div class="btn-group mb-3 mt-3">
@@ -236,6 +236,29 @@ export default defineComponent({
           backgroundColor: 'rgba(100, 230, 200, 0.5)',// Change the color
         }]
       },
+      chartData1: {
+        labels: ['2024-01-01', '2024-01-02', '2024-01-03'], // Example dates
+        datasets: [{
+          label: 'MQ131',
+          data: [10, 20, 30],
+          backgroundColor: 'rgba(255, 99, 132, 0.5)',
+        },
+        {
+          label: 'MQGas',
+          data: [10, 20, 30],
+          backgroundColor: 'rgba(100, 150, 255, 0.5)',
+        },
+        {
+          label: 'PH Meter',
+          data: [20, 14, 10],
+          backgroundColor: 'rgba(100, 230, 100, 0.5)',// Change the color
+        },
+        {
+          label: 'Temperature',
+          data: [32, 30, 36],
+          backgroundColor: 'rgba(100, 230, 200, 0.5)',// Change the color
+        }]
+      },
       chartOptions: {
         responsive: true,
         maintainAspectRatio: false,
@@ -262,7 +285,6 @@ export default defineComponent({
   created() {
     this.header = 'My List';
     console.log('FETCH DATA')
-    // this.fetchData()
     this.getLatestData();
   },
   methods: {
@@ -322,12 +344,21 @@ export default defineComponent({
         const output: any = Object.entries(data.data).map(([key, value]) => {
           return {[key]: value}
         })
+        const output1: any = Object.entries(data.data1).map(([key, value]) => {
+          return {[key]: value}
+        })
         // change object to array {object key, object value 1, object value 2}
         let labels1: any = []
         let mq131_1: any = []
         let mqgas_1: any = []
         let ph_1: any = []
         let temperature_1: any = []
+
+        let labels2: any = []
+        let mq131_2: any = []
+        let mqgas_2: any = []
+        let ph_2: any = []
+        let temperature_2: any = []
 
         let table_data = output.map((item: any) => {
           const key = Object.keys(item)[0]
@@ -339,16 +370,37 @@ export default defineComponent({
           temperature_1.push(value.Temperature)
           return { key, ...value }
         })
+
+        let table_data2 = output1.map((item: any) => {
+          const key = Object.keys(item)[0]
+          const value: any = Object.values(item)[0]
+          labels2.push(key)
+          mq131_2.push(value.MQ131)
+          mqgas_2.push(value.MQGas)
+          ph_2.push(value.pH)
+          temperature_2.push(value.Temperature)
+          return { key, ...value }
+        })
+
         const limit: any = output.slice(-10)
+        const limit1: any = output1.slice(-10)
+
         this.chartData.labels = labels1.slice(-10)
         this.chartData.datasets[0].data = mq131_1.slice(-10)
         this.chartData.datasets[1].data = mqgas_1.slice(-10)
         this.chartData.datasets[2].data = ph_1.slice(-10)
         this.chartData.datasets[3].data = temperature_1.slice(-10)
 
+        this.chartData1.labels = labels2.slice(-10)
+        this.chartData1.datasets[0].data = mq131_2.slice(-10)
+        this.chartData1.datasets[1].data = mqgas_2.slice(-10)
+        this.chartData1.datasets[2].data = ph_2.slice(-10)
+        this.chartData1.datasets[3].data = temperature_2.slice(-10)
+
         this.data1 = table_data.slice(-20)
-        this.data2 = table_data.slice(-20)
+        this.data2 = table_data2.slice(-20)
         const last_data: any = Object.values(limit[limit.length - 1])
+        const last_data2: any = Object.values(limit1[limit1.length - 1])
         setTimeout(() => {
             this.last_data_1[0].value = last_data[0].MQ131 as number;
             this.last_data_1[1].value = last_data[0].Temperature as number;
@@ -356,10 +408,10 @@ export default defineComponent({
             this.last_data_1[3].value = last_data[0].MQGas ? last_data[0].MQGas as number : 0;
 
 
-            this.last_data_2[0].value = last_data[0].MQ131 as number;
-            this.last_data_2[1].value = last_data[0].Temperature as number;
-            this.last_data_2[2].value = last_data[0].pH ? last_data[0].pH as number : 0;
-            this.last_data_2[3].value = last_data[0].MQGas ? last_data[0].MQGas as number : 0;
+            this.last_data_2[0].value = last_data2[0].MQ131 as number;
+            this.last_data_2[1].value = last_data2[0].Temperature as number;
+            this.last_data_2[2].value = last_data2[0].pH ? last_data2[0].pH as number : 0;
+            this.last_data_2[3].value = last_data2[0].MQGas ? last_data2[0].MQGas as number : 0;
             this.show_data = 'all'
         }, 1000)
       });
